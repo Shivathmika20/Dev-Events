@@ -7,6 +7,7 @@ export default function Home() {
       <h1 className="text-center mt-10">The Hub for Every Dev <br /> Event You Can't Miss</h1>
       <p className="text-center mt-4">Hackthons,Meetups, and Conferences, All in One Place</p>
       <Explorebtn />
+      
 
       <div className='mt-20 space-y-6 container mx-auto'>
         <h3>Featured Events</h3>
