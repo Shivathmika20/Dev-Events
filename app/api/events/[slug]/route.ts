@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, {params}:{params:Promise<{slug:strin
         if(!eventInfo){
             return NextResponse.json({message:"Event not found"}, {status:404});
         }
-        console.log(eventInfo);
+        
         return NextResponse.json({message:"Event found",eventInfo},{status:200});
     }
     catch(e){

@@ -1,5 +1,94 @@
-export default function EventPage () {
+import axios from 'axios'
+import Image from 'next/image'
+
+const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
+
+const Eventdetails =({icon,alt,label}:{icon:string,alt:string,label:string})=>{
   return (
-    <div>Event Page</div>
+      <div className='flex flex-row items-center gap-2'>
+        <Image src={icon} alt={alt} width={17} height={17}/>
+        <p>{label}</p>
+      </div>
+  )
+}
+
+const EventAgenda=({agendaItems}:{agendaItems:string[]})=>{
+ return(
+   <div className="agenda">
+    <h2>Event Agenda</h2>
+    <ul>
+      {
+        agendaItems.map((item)=>(
+          <li key={item} >{item}</li>
+        ))
+      }
+    </ul>
+  </div>
+ )
+
+}
+
+const EventTags=({tags}:{tags:string[]})=>{
+  return(
+    <div className='flex flex-row gap-1.5 flex-wrap'>
+      {
+        tags.map((tag)=>(
+          <div key={tag} className="pill">{tag}</div>
+        ))
+      }
+    </div>
+  )
+}
+
+export default async function EventPage ({params}:{params:Promise<{slug:string}>}) {
+  const {slug} = await params;
+  const res=await axios.get(`${BASE_URL}/api/events/${slug}`);
+  const event=res.data.eventInfo
+  console.log(event)
+  return (
+      <section id="event" className="my-4 mx-6">
+        <div className="header">
+          <h1>{event.title}</h1>
+          <p>{event.description}</p>
+        </div>
+
+        <div className="details">
+          {/* leftside-event content */}
+          <div className="content">
+           <Image src={event.image} alt="Event Banner" width={800} height={800} className="banner"/>
+
+            <section className="flex-col gap-2">
+                <h2>Overview</h2>
+                <p>{event.overview}</p>
+            </section>
+
+             <section className="flex-col gap-2">
+                <h2>Event Details</h2>
+                <Eventdetails icon="/icons/calendar.svg" alt="calender" label={event.date}/>
+                <Eventdetails icon="/icons/clock.svg" alt="clock" label={event.time}/>
+                <Eventdetails icon="/icons/pin.svg" alt="pin" label={event.location}/>
+                <Eventdetails icon="/icons/mode.svg" alt="mode" label={event.mode}/>
+                <Eventdetails icon="/icons/audience.svg" alt="audience" label={event.audience}/>
+            </section>
+
+            <EventAgenda agendaItems={event.agenda}/>
+              
+            <section className='flex-col gap-2'>
+              <h2>About the Organizer</h2>
+              <p>{event.organizer}</p>
+            </section>
+
+            <EventTags tags={event.tags}/>
+
+          </div>
+
+            {/* ryt side */}
+          <aside className="booking">
+            <p className="text-lg font-semibold">Book Event</p>
+          </aside>
+        </div>
+
+        
+      </section>
   )
 }
