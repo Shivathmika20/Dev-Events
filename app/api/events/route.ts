@@ -2,7 +2,7 @@ import {NextResponse,NextRequest} from 'next/server';
 import {prisma} from '@/lib/prisma';
 import {EventMode} from '@/generated/prisma/client';
 import {generateSlug, normalizeDate, normalizeTime} from '@/lib/event-utils';
-// import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,21 +23,23 @@ export async function POST(req: NextRequest) {
     const agenda = JSON.parse(formData.get("agenda") as string);
     const tags = JSON.parse(formData.get("tags") as string);
 
-    // const file = formData.get("image") as File;
-    // if (!file) return NextResponse.json({ message: "Image is required" }, { status: 400 });
-
+  
 
     if (!mode) {
     return NextResponse.json({ message: "Invalid mode" }, { status: 400 });
     }
+     
+    const file = formData.get("image") as File;
+    if (!file) return NextResponse.json({ message: "Image is required" }, { status: 400 });
 
-    // const buffer = Buffer.from(await file.arrayBuffer());
-    // const uploadResult: any = await new Promise((resolve, reject) => {
-    //   cloudinary.uploader.upload_stream({ resource_type: "image", folder: "DevEvent" }, (err, res) => {
-    //     if (err) reject(err);
-    //     else resolve(res);
-    //   }).end(buffer);
-    // });
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const uploadResult: any = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream({ resource_type: "image", folder: "DevEvent" }, (err, res) => {
+        if (err) reject(err);
+        else resolve(res);
+      }).end(buffer);
+    });
 
     const slug = generateSlug(title);
 
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
         mode,
         audience,
         organizer,
-        image,
+        image:uploadResult.secure_url,
         agenda,
         tags,
       },
@@ -64,5 +66,20 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     console.error(e);
     return NextResponse.json({ message: e.message || "Error creating event" }, { status: 500 });
+  }
+}
+
+
+export async function GET() {
+  try{
+    const events=await prisma.event.findMany({
+      orderBy:{
+        createdAt:'desc'
+      }
+    });
+    return NextResponse.json({ message:"Events fetched successfully",events }, { status: 200 });
+  }
+  catch(e){
+    return NextResponse.json({ message: "Error fetching events" }, { status: 500 });
   }
 }
