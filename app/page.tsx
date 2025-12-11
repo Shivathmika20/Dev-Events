@@ -17,16 +17,16 @@ export default  async function Home() {
       <Explorebtn />
       
 
-      <div className='mt-20 space-y-6 container mx-auto'>
+      <div className='featured-events'>
         <h3>Featured Events</h3>
         <ul className='events'>
-         {
+        {
           events && events.length>0 && events.map((event:any)=>(
             <li key={event.id} className='list-none'>
               <EventCard {...event} />
             </li>
           ))
-         }
+        }
         </ul>
       </div>
     </section>
