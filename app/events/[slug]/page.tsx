@@ -1,4 +1,5 @@
 
+import BookEvent from '@/components/BookEvent'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
@@ -46,7 +47,7 @@ export default async function EventPage ({params}:{params:Promise<{slug:string}>
   const {slug} = await params;
   
   const res = await fetch(`${BASE_URL}/api/events/${slug}`, {
-             next: { revalidate: 60 }, // optional: ISR caching
+             next: { revalidate: 60 }, 
      })
   
   if (!res.ok) {
@@ -55,11 +56,13 @@ export default async function EventPage ({params}:{params:Promise<{slug:string}>
     }
   const data = await res.json()
   const event = data.eventInfo
-  console.log(event)
+  // console.log(event)
     
   if(!event){
       return notFound();
     }
+
+    const booking=10;
 
     
   return (
@@ -74,12 +77,12 @@ export default async function EventPage ({params}:{params:Promise<{slug:string}>
           <div className="content">
            <Image src={event.image} alt="Event Banner" width={800} height={800} className="banner"/>
 
-            <section className="flex-col gap-2">
+            <section className="flex-col-gap-2">
                 <h2>Overview</h2>
                 <p>{event.overview}</p>
             </section>
 
-             <section className="flex-col gap-2">
+             <section className="flex-col-gap-2">
                 <h2>Event Details</h2>
                 <Eventdetails icon="/icons/calendar.svg" alt="calender" label={event.date}/>
                 <Eventdetails icon="/icons/clock.svg" alt="clock" label={event.time}/>
@@ -90,7 +93,7 @@ export default async function EventPage ({params}:{params:Promise<{slug:string}>
 
             <EventAgenda agendaItems={event.agenda}/>
               
-            <section className='flex-col gap-2'>
+            <section className='flex-col-gap-2'>
               <h2>About the Organizer</h2>
               <p>{event.organizer}</p>
             </section>
@@ -101,7 +104,22 @@ export default async function EventPage ({params}:{params:Promise<{slug:string}>
 
             {/* ryt side */}
           <aside className="booking">
-            <p className="text-lg font-semibold">Book Event</p>
+              <div className='signup-card'>
+                <h2>Book Your Spot</h2>
+                {
+                  booking>0 ? (
+                    <p className='text-sm'>
+                      Join {booking} people who have already booked their spot!
+                    </p>
+                  ):(
+                    <p className='text-sm'>
+                      Be the first to book your spot for this event!
+                    </p>
+                  )
+                }
+
+                <BookEvent />
+              </div>
           </aside>
         </div>
 
