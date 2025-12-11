@@ -1,5 +1,7 @@
-import axios from 'axios'
+
 import Image from 'next/image'
+import { notFound } from 'next/navigation'
+
 
 const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 
@@ -42,9 +44,24 @@ const EventTags=({tags}:{tags:string[]})=>{
 
 export default async function EventPage ({params}:{params:Promise<{slug:string}>}) {
   const {slug} = await params;
-  const res=await axios.get(`${BASE_URL}/api/events/${slug}`);
-  const event=res.data.eventInfo
+  
+  const res = await fetch(`${BASE_URL}/api/events/${slug}`, {
+             next: { revalidate: 60 }, // optional: ISR caching
+     })
+  
+  if (!res.ok) {
+        console.log("Error fetching event data")
+        return notFound()
+    }
+  const data = await res.json()
+  const event = data.eventInfo
   console.log(event)
+    
+  if(!event){
+      return notFound();
+    }
+
+    
   return (
       <section id="event" className="my-4 mx-6">
         <div className="header">
