@@ -202,7 +202,7 @@
   }
 
   #event {
-    @apply mx-auto container sm:px-10;
+    @apply mx-auto container sm:px-12;
     
     .header {
       @apply flex w-2/3 flex-col items-start gap-4 max-lg:w-full mb-10;

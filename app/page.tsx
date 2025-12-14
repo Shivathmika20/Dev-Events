@@ -1,13 +1,24 @@
 import Explorebtn from '@/components/Explorebtn'
 import EventCard from '@/components/EventCard'
 import axios from 'axios'
+import { cacheLife } from 'next/cache'
 
 const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 export default  async function Home() {
+  'use cache';
+  cacheLife('hours');
 
-  const res=await axios.get(`${BASE_URL}/api/events`)
-  // console.log("Events Data:",res.data)
-  const {events}=res.data
+
+  const res = await fetch(`${BASE_URL}/api/events`, {
+    next: { revalidate: 3600 } // 1 hour caching
+  });
+  
+  if (!res.ok) {
+    throw new Error("Failed to fetch events");
+  }
+
+  const data = await res.json();
+  const events = data.events;
   
 
   return (
