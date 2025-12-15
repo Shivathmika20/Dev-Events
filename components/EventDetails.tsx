@@ -102,7 +102,7 @@ const EventDetails = async ({ params }: { params: Promise<string> }) => {
                 <h2>Event Details</h2>
                 <Eventdetails icon="/icons/calendar.svg" alt="calender" label={event.date}/>
                 <Eventdetails icon="/icons/clock.svg" alt="clock" label={event.time}/>
-                <Eventdetails icon="/icons/pin.svg" alt="pin" label={event.location}/>
+                <Eventdetails icon="/icons/pin.svg" alt="pin" label={`${event.venue}, ${event.location}`}/>
                 <Eventdetails icon="/icons/mode.svg" alt="mode" label={event.mode}/>
                 <Eventdetails icon="/icons/audience.svg" alt="audience" label={event.audience}/>
             </section>
