@@ -82,7 +82,7 @@ const EventDetails = async ({ params }: { params: Promise<string> }) => {
     const similarEvents:any=await getSimilarEvents(slug);
 
   return (
-    <section id="event" className="my-4 mx-6">
+    <section id="event" className="my-4">
         <div className="header">
           <h1>{event.title}</h1>
           <p>{event.description}</p>

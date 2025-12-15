@@ -3,6 +3,7 @@ import {prisma} from '@/lib/prisma';
 import {EventMode} from '@/generated/prisma/client';
 import {generateSlug, normalizeDate, normalizeTime} from '@/lib/event-utils';
 import { v2 as cloudinary } from "cloudinary";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: NextRequest) {
   try {
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    revalidatePath("/")
     return NextResponse.json({ message: "Event created successfully", createdEvent }, { status: 201 });
   } catch (e: any) {
     console.error(e);

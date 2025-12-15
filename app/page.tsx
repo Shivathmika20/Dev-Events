@@ -5,13 +5,12 @@ import { cacheLife } from 'next/cache'
 
 const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 export default  async function Home() {
-  'use cache';
-  cacheLife('hours');
+
 
 
   const res = await fetch(`${BASE_URL}/api/events`, {
-    next: { revalidate: 3600 } // 1 hour caching
-  });
+        cache: "force-cache" 
+      });
   
   if (!res.ok) {
     throw new Error("Failed to fetch events");
@@ -19,7 +18,7 @@ export default  async function Home() {
 
   const data = await res.json();
   const events = data.events;
-  
+  // console.log("Fetched Eventts:", events);
 
   return (
     <section className="mx-6">

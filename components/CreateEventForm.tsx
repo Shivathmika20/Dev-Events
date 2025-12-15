@@ -3,7 +3,7 @@
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-
+import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,15 +23,18 @@ import {
   FieldDescription,
 } from "@/components/ui/field"
 
+const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
+
 const eventSchema = z.object({
-  title: z.string().min(3),
-  description: z.string().min(10),
-  overview: z.string().min(10),
+  title: z.string().min(3, "Title is required"),
+  description: z.string().min(10 , "Description is required"),
+  overview: z.string().min(10, "Overview is required"),
   image: z.any().optional(),
   date: z.string(),
   time: z.string(),
-  venue: z.string(),
+  venue: z.string().min(3, "Venue is required"),
   location: z.string(),
+  audience: z.string().min(3, "Audience is required"),
   organizer: z.string(),
   mode: z.enum(["ONLINE", "OFFLINE", "HYBRID"]),
   agenda: z.array(z.string().min(2)),
@@ -41,17 +44,64 @@ const eventSchema = z.object({
 type EventFormValues = z.infer<typeof eventSchema>
 
  function CreateEventForm() {
+  const [success, setSuccess] = useState(false);
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
-      mode: "OFFLINE",
-      agenda: [],
-      tags: [],
+        title: "",
+        description: "",
+        overview: "",
+        venue: "",
+        location: "",
+        audience:"",
+        date: "",
+        time: "",
+        mode: "OFFLINE",   
+        organizer: "",
+        agenda: [""],      
+        tags: [""],        
+        image: null,  
     },
   })
 
-  const onSubmit = (data: EventFormValues) => {
-    console.log("Final Event Data:", data)
+  const onSubmit = async (data: EventFormValues) => {
+    // console.log("Final Event Data:", data)
+    try{
+        const formData = new FormData();
+        formData.append('title', data.title);
+        formData.append('description', data.description);
+        formData.append('overview', data.overview);
+        formData.append('venue', data.venue);
+        formData.append('location', data.location);
+        formData.append('date', data.date);
+        formData.append('time', data.time);
+        formData.append('mode', data.mode);
+        formData.append('audience', data.audience);
+        formData.append('organizer', data.organizer);
+        formData.append('agenda', JSON.stringify(data.agenda));
+        formData.append('tags', JSON.stringify(data.tags));
+        if(data.image){
+          formData.append('image', data.image);
+        }
+
+        
+        const res=await fetch(`${BASE_URL}/api/events`, {
+          method: 'POST',
+          body: formData
+        })
+
+        const result=await res.json();
+        console.log(result);
+        if(!res.ok){
+          throw new Error(result.message || 'Failed to create event');
+        }
+        setSuccess(true);
+        form.reset();
+        // console.log("Event Creation Suscessfully", result);
+    }
+    catch(e){
+      console.error("Error creating event:", e);
+    }
   }
 
   return (
@@ -67,7 +117,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Event Title
                     </FieldLabel>
                     <Input {...field} className="h-9 bg-zinc-900 border-zinc-800" />
@@ -82,7 +132,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Event Date
                     </FieldLabel>
                     <Input type="date" {...field} className="h-9 bg-zinc-900 border-zinc-800" style={{ colorScheme: "dark" }} />
@@ -96,7 +146,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Event Time
                     </FieldLabel>
                     <Input type="time" {...field} className="h-9 bg-zinc-900 border-zinc-800" style={{ colorScheme: "dark" }} />
@@ -110,7 +160,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Venue 
                     </FieldLabel>
                     <Input {...field} className="h-9 bg-zinc-900 border-zinc-800" />
@@ -124,13 +174,15 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Location
                     </FieldLabel>
                     <Input {...field} className="h-9 bg-zinc-900 border-zinc-800" />
                   </Field>
                 )}
               />
+             
+
 
               {/* Mode */}
               <Controller
@@ -138,7 +190,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Event Mode
                     </FieldLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
@@ -161,13 +213,13 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Event Image / Banner
                     </FieldLabel>
                     <Input
                       type="file"
 
-                      onChange={(e) => field.onChange(e.target.files?.[0])}
+                      onChange={(e) => field.onChange(e.target.files?.[0] ?? null)}
                       className="h-9 bg-zinc-900 border-zinc-800"
                     />
                   </Field>
@@ -180,7 +232,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Organizer
                     </FieldLabel>
                     <Input {...field} className="h-9 bg-zinc-900 border-zinc-800" />
@@ -189,31 +241,37 @@ type EventFormValues = z.infer<typeof eventSchema>
               />
 
               {/* Agenda → string[] */}
-              <Controller
-                name="agenda"
-                control={form.control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
-                      Agenda
-                    </FieldLabel>
-                    <Input
-                      placeholder="Keynote, Networking, Workshop"
-                      value={field.value.join(", ")}
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.value
-                            .split(",")
-                            .map((v) => v.trim())
-                            .filter(Boolean)
-                        )
-                      }
-                      className="h-9 bg-zinc-900 border-zinc-800"
-                    />
-                    <FieldDescription>Comma separated</FieldDescription>
-                  </Field>
-                )}
-              />
+                <Controller
+                  name="agenda"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel className="text-xs text-zinc-300">
+                        Agenda
+                      </FieldLabel>
+
+                      <Textarea
+                        rows={3}
+                        placeholder={`Keynote,\nNetworking,\nWorkshop`}
+                        value={(field.value ?? []).join(", ")}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value
+                              .split(",")
+                              .map((v) => v.trim())
+                              .filter(Boolean)
+                          )
+                        }
+                        className="bg-zinc-900 border-zinc-800 text-white resize-none"
+                      />
+
+                      <FieldDescription className="text-xs text-zinc-500">Comma Seperated</FieldDescription>
+                    </Field>
+                  )}
+                />
+
+
+                   
 
               {/* Tags → string[] */}
               <Controller
@@ -221,7 +279,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Tags
                     </FieldLabel>
                     <Input
@@ -248,7 +306,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Description
                     </FieldLabel>
                     <Textarea
@@ -256,9 +314,27 @@ type EventFormValues = z.infer<typeof eventSchema>
                       rows={2}
                       className="bg-zinc-900 border-zinc-800 resize-none"
                     />
+                    {(field.value?.length ?? 0)}/500
                   </Field>
                 )}
               />
+              {/* Audience */}
+               <Controller
+                  name="audience"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel className="text-zinc-300 text-sm">
+                        Audience
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        placeholder="Students, Developers, Open to all"
+                        className="h-9 bg-zinc-900 border-zinc-800"
+                      />
+                    </Field>
+                  )}
+                />
 
               {/* Overview */}
               <Controller
@@ -266,7 +342,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                 control={form.control}
                 render={({ field }) => (
                   <Field>
-                    <FieldLabel className="text-xs text-zinc-400">
+                    <FieldLabel className="text-xs text-zinc-300">
                       Overview
                     </FieldLabel>
                     <Textarea
@@ -274,9 +350,15 @@ type EventFormValues = z.infer<typeof eventSchema>
                       rows={2}
                       className="bg-zinc-900 border-zinc-800 resize-none"
                     />
+                    {(field.value?.length ?? 0)}/500
                   </Field>
                 )}
               />
+              {success && (
+                  <p className="text-green-400 text-sm mt-2">
+                    Event created successfully 
+                  </p>
+              )}
 
               <Button
                 type="submit"
