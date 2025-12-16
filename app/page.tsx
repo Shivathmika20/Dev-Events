@@ -7,7 +7,7 @@ export default  async function Home() {
 
   const res = await fetch(`${BASE_URL}/api/events`, {
         cache: "force-cache" ,
-        
+        next: { revalidate: 30 } 
       });
   
   if (!res.ok) {
