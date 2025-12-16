@@ -50,6 +50,10 @@ const EventTags=({tags}:{tags:string[]})=>{
 
 const EventDetails = async ({ params }: { params: Promise<string> }) => {
 
+  if (!BASE_URL) {
+    console.error("NEXT_PUBLIC_BASE_URL is undefined!");
+    return <p className="text-center mt-10">Base URL not configured</p>;
+  }
 
   const slug=await params
   let event;

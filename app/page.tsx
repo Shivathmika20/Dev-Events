@@ -6,17 +6,25 @@ import EventCard from '@/components/EventCard'
 const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 export default  async function Home() {
 
+  if (!BASE_URL) {
+    console.error("NEXT_PUBLIC_BASE_URL is undefined!");
+    return <p className="text-center mt-10">Base URL not configured</p>;
+  }
+
   const res = await fetch(`${BASE_URL}/api/events`, {
         cache: "force-cache"  
       });
   
+  
   if (!res.ok) {
-    throw new Error("Failed to fetch events");
+    console.error("Events fetch failed");
+    return <p className="text-center mt-10">Events unavailable</p>;
   }
+
 
   const data = await res.json();
   const events = data.events;
-  console.log("Fetched Eventts:", events);
+  // console.log("Fetched Eventts:", events);
 
   return (
     <section className="mx-6">

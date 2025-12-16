@@ -66,6 +66,12 @@ type EventFormValues = z.infer<typeof eventSchema>
     },
   })
 
+  if (!BASE_URL) {
+    console.error("NEXT_PUBLIC_BASE_URL is undefined!");
+    return <p className="text-center mt-10">Base URL not configured</p>;
+  }
+
+
   const onSubmit = async (data: EventFormValues) => {
     // console.log("Final Event Data:", data)
     const agendaArray = data.agenda
