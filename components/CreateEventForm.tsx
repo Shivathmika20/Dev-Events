@@ -3,6 +3,7 @@
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import { useRouter } from "next/navigation";
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -37,14 +38,15 @@ const eventSchema = z.object({
   audience: z.string().min(3, "Audience is required"),
   organizer: z.string(),
   mode: z.enum(["ONLINE", "OFFLINE", "HYBRID"]),
-  agenda: z.array(z.string().min(2)),
-  tags: z.array(z.string().min(1)),
+  agenda: z.string().min(2),
+  tags: z.string().min(1),
 })
 
 type EventFormValues = z.infer<typeof eventSchema>
 
  function CreateEventForm() {
   const [success, setSuccess] = useState(false);
+  const router = useRouter();
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
@@ -58,14 +60,29 @@ type EventFormValues = z.infer<typeof eventSchema>
         time: "",
         mode: "OFFLINE",   
         organizer: "",
-        agenda: [""],      
-        tags: [""],        
+        agenda:"",      
+        tags: "",        
         image: null,  
     },
   })
 
   const onSubmit = async (data: EventFormValues) => {
     // console.log("Final Event Data:", data)
+    const agendaArray = data.agenda
+    .split(/[\n,]/)
+    .map(v => v.trim())
+    .filter(Boolean)
+
+  console.log(agendaArray)
+
+  const tagsArray = data.tags
+  .split(/[\n,]/)
+  .map(t => t.trim())
+  .filter(Boolean)
+
+  console.log(tagsArray)
+    
+    
     try{
         const formData = new FormData();
         formData.append('title', data.title);
@@ -78,8 +95,8 @@ type EventFormValues = z.infer<typeof eventSchema>
         formData.append('mode', data.mode);
         formData.append('audience', data.audience);
         formData.append('organizer', data.organizer);
-        formData.append('agenda', JSON.stringify(data.agenda));
-        formData.append('tags', JSON.stringify(data.tags));
+        formData.append('agenda', JSON.stringify(agendaArray));
+        formData.append('tags', JSON.stringify(tagsArray));
         if(data.image){
           formData.append('image', data.image);
         }
@@ -97,6 +114,7 @@ type EventFormValues = z.infer<typeof eventSchema>
         }
         setSuccess(true);
         form.reset();
+        router.push("/")
         // console.log("Event Creation Suscessfully", result);
     }
     catch(e){
@@ -253,15 +271,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                       <Textarea
                         rows={3}
                         placeholder={`Keynote,\nNetworking,\nWorkshop`}
-                        value={(field.value ?? []).join(", ")}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value
-                              .split(",")
-                              .map((v) => v.trim())
-                              .filter(Boolean)
-                          )
-                        }
+                        {...field}
                         className="bg-zinc-900 border-zinc-800 text-white resize-none"
                       />
 
@@ -284,15 +294,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                     </FieldLabel>
                     <Input
                       placeholder="react, nextjs, ai"
-                      value={field.value.join(", ")}
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.value
-                            .split(",")
-                            .map((v) => v.trim())
-                            .filter(Boolean)
-                        )
-                      }
+                      {...field}
                       className="h-9 bg-zinc-900 border-zinc-800"
                     />
                     <FieldDescription>Comma separated</FieldDescription>

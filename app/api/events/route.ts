@@ -79,6 +79,7 @@ export async function GET() {
         createdAt:'desc'
       }
     });
+    
     return NextResponse.json({ message:"Events fetched successfully",events }, { status: 200 });
   }
   catch(e){

@@ -6,7 +6,8 @@ const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 export default  async function Home() {
 
   const res = await fetch(`${BASE_URL}/api/events`, {
-        cache: "force-cache" 
+        cache: "force-cache" ,
+        
       });
   
   if (!res.ok) {
@@ -15,7 +16,7 @@ export default  async function Home() {
 
   const data = await res.json();
   const events = data.events;
-  // console.log("Fetched Eventts:", events);
+  console.log("Fetched Eventts:", events);
 
   return (
     <section className="mx-6">
