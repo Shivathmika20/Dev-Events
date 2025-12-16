@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import Explorebtn from '@/components/Explorebtn'
 import EventCard from '@/components/EventCard'
 
@@ -6,8 +7,7 @@ const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 export default  async function Home() {
 
   const res = await fetch(`${BASE_URL}/api/events`, {
-        cache: "force-cache" ,
-        next: { revalidate: 30 } 
+        cache: "force-cache"  
       });
   
   if (!res.ok) {
