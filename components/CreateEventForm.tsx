@@ -106,7 +106,7 @@ type EventFormValues = z.infer<typeof eventSchema>
 
   return (
     <div className="flex justify-center px-4">
-      <Card className="w-full max-w-md bg-zinc-950 border border-zinc-800 rounded-xl text-white">
+      <Card className="w-full max-w-xl bg-zinc-950 border border-zinc-600 rounded-xl text-white">
         <CardContent className="pt-6">
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup className="space-y-0 text-white/50">
@@ -120,7 +120,7 @@ type EventFormValues = z.infer<typeof eventSchema>
                     <FieldLabel className="text-xs text-zinc-300">
                       Event Title
                     </FieldLabel>
-                    <Input {...field} className="h-9 bg-zinc-900 border-zinc-800" />
+                    <Input {...field} className="h-9 bg-zinc-900 border-zinc-800" placeholder="Enter title" />
                     <FieldError errors={[fieldState.error]} />
                   </Field>
                 )}

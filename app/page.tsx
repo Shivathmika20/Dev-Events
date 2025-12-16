@@ -1,12 +1,9 @@
 import Explorebtn from '@/components/Explorebtn'
 import EventCard from '@/components/EventCard'
-import axios from 'axios'
-import { cacheLife } from 'next/cache'
+
 
 const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 export default  async function Home() {
-
-
 
   const res = await fetch(`${BASE_URL}/api/events`, {
         cache: "force-cache" 
@@ -27,7 +24,7 @@ export default  async function Home() {
       <Explorebtn />
       
 
-      <div className='featured-events'>
+      <div className='featured-events' id="feature-events">
         <h3>Featured Events</h3>
         <ul className='events'>
         {
