@@ -82,7 +82,7 @@ export async function GET() {
         createdAt:'desc'
       }
     });
-       console.log("📦 Events count:", events.length);
+    console.log("📦 Events count:", events.length);
     
     return NextResponse.json({ message:"Events fetched successfully",events }, { status: 200 });
   }
