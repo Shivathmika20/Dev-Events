@@ -34,6 +34,10 @@ const config: runtime.GetPrismaClientConfig = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -47,6 +51,7 @@ const config: runtime.GetPrismaClientConfig = {
     "db"
   ],
   "activeProvider": "mongodb",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -55,8 +60,8 @@ const config: runtime.GetPrismaClientConfig = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mongodb\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum EventMode {\n  ONLINE\n  OFFLINE\n  HYBRID\n}\n\nmodel Event {\n  id          String    @id @default(auto()) @map(\"_id\") @db.ObjectId\n  title       String\n  slug        String    @unique\n  description String\n  overview    String\n  image       String\n  venue       String\n  location    String\n  date        String\n  time        String\n  mode        EventMode\n  audience    String\n  agenda      String[]\n  organizer   String\n  tags        String[]\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  bookings    Booking[]\n}\n\nmodel Booking {\n  id        String   @id @default(auto()) @map(\"_id\") @db.ObjectId\n  eventId   String   @db.ObjectId\n  event     Event    @relation(fields: [eventId], references: [id])\n  email     String\n  createdAt DateTime @default(now())\n}\n",
-  "inlineSchemaHash": "fbd3205819eb5bb8ca59c3c0f382776acc0dd57c4fd892f8bb005b07fd4268ef",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"mongodb\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum EventMode {\n  ONLINE\n  OFFLINE\n  HYBRID\n}\n\nmodel Event {\n  id          String    @id @default(auto()) @map(\"_id\") @db.ObjectId\n  title       String\n  slug        String    @unique\n  description String\n  overview    String\n  image       String\n  venue       String\n  location    String\n  date        String\n  time        String\n  mode        EventMode\n  audience    String\n  agenda      String[]\n  organizer   String\n  tags        String[]\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  bookings    Booking[]\n}\n\nmodel Booking {\n  id        String   @id @default(auto()) @map(\"_id\") @db.ObjectId\n  eventId   String   @db.ObjectId\n  event     Event    @relation(fields: [eventId], references: [id])\n  email     String\n  createdAt DateTime @default(now())\n}\n",
+  "inlineSchemaHash": "f28db62bf12fbd692734b4cf3b1f7ec5dd92dafcfb545aa8c13c3fa0aaaf82fa",
   "copyEngine": true,
   "runtimeDataModel": {
     "models": {},
