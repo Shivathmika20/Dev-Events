@@ -1,29 +1,29 @@
 export const dynamic = "force-dynamic";
 import Explorebtn from '@/components/Explorebtn'
 import EventCard from '@/components/EventCard'
-
+import { events } from '@/lib/data'
 
 const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL
 export default  async function Home() {
 
-  if (!BASE_URL) {
-    console.error("NEXT_PUBLIC_BASE_URL is undefined!");
-    return <p className="text-center mt-10">Base URL not configured</p>;
-  }
+  // if (!BASE_URL) {
+  //   console.error("NEXT_PUBLIC_BASE_URL is undefined!");
+  //   return <p className="text-center mt-10">Base URL not configured</p>;
+  // }
 
-  const res = await fetch(`${BASE_URL}/api/events`, {
-        cache: "force-cache"  
-      });
+  // const res = await fetch(`${BASE_URL}/api/events`, {
+  //       cache: "force-cache"  
+  //     });
   
   
-  if (!res.ok) {
-    console.error("Events fetch failed");
-    return <p className="text-center mt-10">Events unavailable</p>;
-  }
+  // if (!res.ok) {
+  //   console.error("Events fetch failed");
+  //   return <p className="text-center mt-10">Events unavailable</p>;
+  // }
 
 
-  const data = await res.json();
-  const events = data.events;
+  // const data = await res.json();
+  // const events = data.events;
   // console.log("Fetched Eventts:", events);
 
   return (
