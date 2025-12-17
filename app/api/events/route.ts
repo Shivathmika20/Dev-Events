@@ -5,6 +5,9 @@ import {generateSlug, normalizeDate, normalizeTime} from '@/lib/event-utils';
 import { v2 as cloudinary } from "cloudinary";
 import { revalidatePath } from "next/cache";
 
+
+export const runtime = "nodejs";
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
