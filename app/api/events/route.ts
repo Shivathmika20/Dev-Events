@@ -74,11 +74,15 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try{
+    await prisma.$connect();
+    console.log("✅ Prisma connected to MongoDB");
+
     const events=await prisma.event.findMany({
       orderBy:{
         createdAt:'desc'
       }
     });
+       console.log("📦 Events count:", events.length);
     
     return NextResponse.json({ message:"Events fetched successfully",events }, { status: 200 });
   }
